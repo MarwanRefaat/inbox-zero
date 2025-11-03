@@ -29,12 +29,19 @@ export const env = createEnv({
 
     DEFAULT_LLM_PROVIDER: z
       // custom is deprecated
-      .enum([...llmProviderEnum.options, "custom"])
+      .string()
+      .trim()
+      .transform((val) => val || "anthropic")
+      .pipe(z.enum([...llmProviderEnum.options, "custom"]))
       .default("anthropic"),
     DEFAULT_LLM_MODEL: z.string().optional(),
     DEFAULT_OPENROUTER_PROVIDERS: z.string().optional(), // Comma-separated list of OpenRouter providers for default model (e.g., "Google Vertex,Anthropic")
     // Set this to a cheaper model like Gemini Flash
-    ECONOMY_LLM_PROVIDER: llmProviderEnum.optional(),
+    ECONOMY_LLM_PROVIDER: z
+      .string()
+      .trim()
+      .pipe(llmProviderEnum)
+      .optional(),
     ECONOMY_LLM_MODEL: z.string().optional(),
     ECONOMY_OPENROUTER_PROVIDERS: z.string().optional(), // Comma-separated list of OpenRouter providers for economy model (e.g., "Google Vertex,Anthropic")
     // Set this to a fast but strong model like Groq Kimi K2. Leaving blank will fallback to default which is also fine.
