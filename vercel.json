@@ -1,7 +1,7 @@
 {
-  "buildCommand": "turbo run build --filter=./apps/web",
+  "buildCommand": "corepack enable && pnpm install --no-frozen-lockfile && turbo run build --filter=./apps/web",
   "installCommand": "corepack enable && pnpm install --no-frozen-lockfile",
-  "framework": "nextjs",
+  "framework": null,
   "crons": [
     {
       "path": "/api/watch/all",
