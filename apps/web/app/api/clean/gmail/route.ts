@@ -10,6 +10,7 @@ import { isDefined } from "@/utils/types";
 import { createScopedLogger } from "@/utils/logger";
 import { CleanAction } from "@prisma/client";
 import { updateThread } from "@/utils/redis/clean";
+import { env } from "@/env";
 
 const logger = createScopedLogger("api/clean/gmail");
 
@@ -137,13 +138,15 @@ async function saveToDatabase({
   });
 }
 
-export const POST = withError(
-  verifySignatureAppRouter(async (request: NextRequest) => {
-    const json = await request.json();
-    const body = cleanGmailSchema.parse(json);
+const handler = async (request: NextRequest) => {
+  const json = await request.json();
+  const body = cleanGmailSchema.parse(json);
 
-    await performGmailAction(body);
+  await performGmailAction(body);
 
-    return NextResponse.json({ success: true });
-  }),
-);
+  return NextResponse.json({ success: true });
+};
+
+export const POST = env.QSTASH_CURRENT_SIGNING_KEY
+  ? withError(verifySignatureAppRouter(handler))
+  : withError(handler);
