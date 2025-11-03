@@ -1,5 +1,6 @@
 {
-  "buildCommand": "cd ../.. && pnpm build",
+  "buildCommand": "turbo run build --filter=./apps/web",
+  "installCommand": "corepack enable && pnpm install --no-frozen-lockfile",
   "framework": "nextjs",
   "crons": [
     {
