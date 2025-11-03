@@ -13,6 +13,11 @@ const withMDX = nextMdx({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Suppress hydration warnings in development (Radix UI generates dynamic IDs)
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
   serverExternalPackages: ["@sentry/nextjs", "@sentry/node"],
   turbopack: {
     rules: {

@@ -131,6 +131,7 @@ export default async function RootLayout({
     <html lang="en" className="h-full" suppressHydrationWarning>
       <body
         className={`h-full ${inter.variable} ${calFont.variable} font-sans antialiased`}
+        suppressHydrationWarning
       >
         <Script
           id="json-ld"
