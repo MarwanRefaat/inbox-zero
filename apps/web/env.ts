@@ -27,18 +27,23 @@ export const env = createEnv({
     EMAIL_ENCRYPT_SECRET: z.string(),
     EMAIL_ENCRYPT_SALT: z.string(),
 
-    DEFAULT_LLM_PROVIDER: z
-      // custom is deprecated
-      .union([z.string(), z.undefined()])
-      .transform((val) => (val || "anthropic").toString().trim())
-      .pipe(z.enum([...llmProviderEnum.options, "custom"])),
+    DEFAULT_LLM_PROVIDER: z.preprocess(
+      (val) => {
+        const str = typeof val === "string" ? val.trim() : String(val || "anthropic").trim();
+        return str;
+      },
+      z.enum([...llmProviderEnum.options, "custom"]).default("anthropic")
+    ),
     DEFAULT_LLM_MODEL: z.string().optional(),
     DEFAULT_OPENROUTER_PROVIDERS: z.string().optional(), // Comma-separated list of OpenRouter providers for default model (e.g., "Google Vertex,Anthropic")
     // Set this to a cheaper model like Gemini Flash
-    ECONOMY_LLM_PROVIDER: z
-      .union([z.string(), z.undefined()])
-      .transform((val) => val ? val.toString().trim() : undefined)
-      .pipe(llmProviderEnum.optional()),
+    ECONOMY_LLM_PROVIDER: z.preprocess(
+      (val) => {
+        if (!val) return undefined;
+        return typeof val === "string" ? val.trim() : undefined;
+      },
+      llmProviderEnum.optional()
+    ),
     ECONOMY_LLM_MODEL: z.string().optional(),
     ECONOMY_OPENROUTER_PROVIDERS: z.string().optional(), // Comma-separated list of OpenRouter providers for economy model (e.g., "Google Vertex,Anthropic")
     // Set this to a fast but strong model like Groq Kimi K2. Leaving blank will fallback to default which is also fine.
