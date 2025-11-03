@@ -113,7 +113,7 @@ NODE_ENV=production
 DEFAULT_LLM_PROVIDER=anthropic
 ECONOMY_LLM_PROVIDER=openai
 
-# Admin Access (Add your email)
+# Admin Access (Add your email - comma-separated for multiple admins)
 ADMINS=marwan@marwanrefaat.com
 
 # If using Fluid Compute is off, set max duration

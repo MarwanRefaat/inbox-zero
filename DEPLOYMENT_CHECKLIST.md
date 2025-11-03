@@ -106,7 +106,8 @@ Use this checklist to deploy Inbox Zero to Vercel with a database.
   - [ ] Set up error tracking (Sentry, etc.)
   - [ ] Configure alerts
 - [ ] **Admin Access:**
-  - [ ] Set `ADMINS=marwan@marwanrefaat.com`
+  - [ ] Set `ADMINS=marwan@marwanrefaat.com` in Vercel environment variables
+  - [ ] Redeploy if needed
   - [ ] Test admin features at `/admin`
 
 ## Troubleshooting
