@@ -20,6 +20,8 @@ out
 .env*.local
 .env.production
 .env.development
+.env.bak
+*.bak
 
 # Debug
 npm-debug.log*

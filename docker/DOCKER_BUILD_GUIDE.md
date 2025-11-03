@@ -1,3 +1,4 @@
+# Docker Build Guide - Environment Variables
 
 ## Important: NEXT_PUBLIC_* Variables
 

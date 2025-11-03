@@ -1,7 +1,7 @@
 name: inbox-zero-services
 services:
   db:
-    image: postgres
+    image: postgres:16
     restart: always
     container_name: inbox-zero
     environment:
@@ -9,7 +9,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-inboxzero}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
     volumes:
-      - database-data:/var/lib/postgresql/data/
+      - database-data:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT:-5432}:5432
     networks:
