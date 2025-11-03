@@ -74,13 +74,21 @@ async function loadEmails(
 ) {
   let pages = 0;
 
+  // Minimum date: January 1, 2024
+  const MIN_DATE = new Date("2024-01-01T00:00:00.000Z");
+
   const newestEmailSaved = await prisma.emailMessage.findFirst({
     where: { emailAccountId },
     orderBy: { date: "desc" },
   });
 
-  const after = newestEmailSaved?.date;
-  logger.info("Loading emails after", { after });
+  // Use the later of: newest saved email date OR Jan 1, 2024
+  const after = newestEmailSaved?.date
+    ? newestEmailSaved.date > MIN_DATE
+      ? newestEmailSaved.date
+      : MIN_DATE
+    : MIN_DATE;
+  logger.info("Loading emails after", { after, minDate: MIN_DATE });
 
   // First pagination loop - load emails after the newest saved email
   let nextPageToken: string | undefined;
@@ -111,28 +119,48 @@ async function loadEmails(
   });
 
   const before = oldestEmailSaved?.date;
-  logger.info("Loading emails before", { before });
+  logger.info("Loading emails before", { before, minDate: MIN_DATE });
 
   // shouldn't happen, but prevents TS errors
   if (!before) return { pages };
+
+  // Don't load emails older than Jan 1, 2024
+  if (before < MIN_DATE) {
+    logger.info("Oldest email is before Jan 1, 2024, stopping backward sync", {
+      oldestDate: before,
+      minDate: MIN_DATE,
+    });
+    return { pages };
+  }
 
   // Second pagination loop - load emails before the oldest saved email
   // Reset nextPageToken for this new pagination sequence
   nextPageToken = undefined;
   while (pages < MAX_PAGES) {
     logger.info("Before Page", { pages, nextPageToken });
+    
+    // Ensure we don't go before Jan 1, 2024
+    const beforeDate = before > MIN_DATE ? before : MIN_DATE;
+    
+    // If we've reached the minimum date, stop loading
+    if (beforeDate <= MIN_DATE) {
+      logger.info("Reached minimum date (Jan 1, 2024), stopping backward sync");
+      break;
+    }
+    
     const res = await saveBatch({
       emailAccountId,
       emailProvider,
       logger,
       nextPageToken,
-      before,
+      before: beforeDate,
       after: undefined,
     });
 
     nextPageToken = res.data.nextPageToken ?? undefined;
 
     if (!res.data.messages || res.data.messages.length < PAGE_SIZE) break;
+    
     pages++;
   }
 
