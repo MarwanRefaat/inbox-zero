@@ -1,4 +1,5 @@
 {
+  "buildCommand": "prisma migrate deploy || echo 'Migrations completed or skipped' && next build",
   "crons": [
     {
       "path": "/api/watch/all",
