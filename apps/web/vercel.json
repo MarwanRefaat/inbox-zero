@@ -1,5 +1,5 @@
 {
-  "buildCommand": "prisma migrate deploy || true && next build",
+  "buildCommand": "(prisma migrate deploy || true) && next build",
   "crons": [
     {
       "path": "/api/watch/all",
