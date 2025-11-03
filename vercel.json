@@ -2,6 +2,7 @@
   "buildCommand": "turbo run build --filter=./apps/web",
   "installCommand": "corepack enable && pnpm install --no-frozen-lockfile",
   "framework": "nextjs",
+  "outputDirectory": "apps/web/.next",
   "crons": [
     {
       "path": "/api/watch/all",
