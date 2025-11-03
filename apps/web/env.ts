@@ -27,19 +27,17 @@ export const env = createEnv({
     EMAIL_ENCRYPT_SECRET: z.string(),
     EMAIL_ENCRYPT_SALT: z.string(),
 
-    DEFAULT_LLM_PROVIDER: z
-      // custom is deprecated
-      .string()
-      .transform((val) => (val || "anthropic").trim())
-      .pipe(z.enum([...llmProviderEnum.options, "custom"]))
-      .default("anthropic"),
+    DEFAULT_LLM_PROVIDER: z.preprocess(
+      (val) => (typeof val === "string" ? val.trim() : val) || "anthropic",
+      z.enum([...llmProviderEnum.options, "custom"]).default("anthropic")
+    ),
     DEFAULT_LLM_MODEL: z.string().optional(),
     DEFAULT_OPENROUTER_PROVIDERS: z.string().optional(), // Comma-separated list of OpenRouter providers for default model (e.g., "Google Vertex,Anthropic")
     // Set this to a cheaper model like Gemini Flash
-    ECONOMY_LLM_PROVIDER: z
-      .string()
-      .transform((val) => val?.trim() || undefined)
-      .pipe(llmProviderEnum.optional()),
+    ECONOMY_LLM_PROVIDER: z.preprocess(
+      (val) => (typeof val === "string" ? val.trim() : undefined) || undefined,
+      llmProviderEnum.optional()
+    ),
     ECONOMY_LLM_MODEL: z.string().optional(),
     ECONOMY_OPENROUTER_PROVIDERS: z.string().optional(), // Comma-separated list of OpenRouter providers for economy model (e.g., "Google Vertex,Anthropic")
     // Set this to a fast but strong model like Groq Kimi K2. Leaving blank will fallback to default which is also fine.
