@@ -1,0 +1,15 @@
+# Ignore unnecessary files for Vercel deployment
+.env*
+!.env.example
+node_modules
+.next
+.turbo
+.git
+.DS_Store
+*.log
+coverage
+dist
+build
+apps/web/.env*
+packages/*/node_modules
+
