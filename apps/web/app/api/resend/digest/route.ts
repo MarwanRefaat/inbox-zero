@@ -45,8 +45,7 @@ export const GET = withEmailAccount(async (request) => {
   return NextResponse.json(result);
 });
 
-export const POST = withError(
-  verifySignatureAppRouter(async (request: NextRequest) => {
+const postHandler = async (request: NextRequest) => {
     const json = await request.json();
     const { success, data, error } = sendDigestEmailBody.safeParse(json);
 
@@ -76,8 +75,11 @@ export const POST = withError(
         { status: 500 },
       );
     }
-  }),
-);
+};
+
+export const POST = env.QSTASH_CURRENT_SIGNING_KEY
+  ? withError(verifySignatureAppRouter(postHandler))
+  : withError(postHandler);
 
 async function getDigestSchedule({
   emailAccountId,

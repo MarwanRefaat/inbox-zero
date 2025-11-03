@@ -11,8 +11,7 @@ import { withError } from "@/utils/middleware";
 import { isAssistantEmail } from "@/utils/assistant/is-assistant-email";
 import { env } from "@/env";
 
-export const POST = withError(
-  verifySignatureAppRouter(async (request: Request) => {
+const handler = async (request: Request) => {
     const logger = createScopedLogger("digest");
 
     try {
@@ -81,8 +80,11 @@ export const POST = withError(
       logger.error("Failed to process digest", { error });
       return new NextResponse("Internal Server Error", { status: 500 });
     }
-  }),
-);
+};
+
+export const POST = env.QSTASH_CURRENT_SIGNING_KEY
+  ? withError(verifySignatureAppRouter(handler))
+  : withError(handler);
 
 async function findOrCreateDigest(
   emailAccountId: string,

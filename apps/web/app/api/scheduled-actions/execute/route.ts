@@ -8,6 +8,7 @@ import { executeScheduledAction } from "@/utils/scheduled-actions/executor";
 import prisma from "@/utils/prisma";
 import { ScheduledActionStatus } from "@prisma/client";
 import { createEmailProvider } from "@/utils/email/provider";
+import { env } from "@/env";
 
 const logger = createScopedLogger("scheduled-actions-executor");
 
@@ -17,8 +18,7 @@ const scheduledActionBody = z.object({
   scheduledActionId: z.string().min(1, "Scheduled action ID is required"),
 });
 
-export const POST = verifySignatureAppRouter(
-  withError(async (request: NextRequest) => {
+const handler = async (request: NextRequest) => {
     try {
       logger.info("QStash request received", {
         url: request.url,
@@ -116,5 +116,8 @@ export const POST = verifySignatureAppRouter(
       logger.error("QStash scheduled action execution failed", { error });
       return new Response("Internal server error", { status: 500 });
     }
-  }),
-);
+};
+
+export const POST = env.QSTASH_CURRENT_SIGNING_KEY
+  ? verifySignatureAppRouter(withError(handler))
+  : withError(handler);

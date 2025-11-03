@@ -8,6 +8,7 @@ import { getGmailClientWithRefresh } from "@/utils/gmail/client";
 import type { CleanGmailBody } from "@/app/api/clean/gmail/route";
 import { SafeError } from "@/utils/error";
 import { createScopedLogger } from "@/utils/logger";
+import { env } from "@/env";
 import { aiClean } from "@/utils/ai/clean/ai-clean";
 import { getEmailForLLM } from "@/utils/get-email-from-message";
 import {
@@ -291,13 +292,15 @@ function getPublish({
   };
 }
 
-export const POST = withError(
-  verifySignatureAppRouter(async (request: Request) => {
+const handler = async (request: Request) => {
     const json = await request.json();
     const body = cleanThreadBody.parse(json);
 
     await cleanThread(body);
 
     return NextResponse.json({ success: true });
-  }),
-);
+};
+
+export const POST = env.QSTASH_CURRENT_SIGNING_KEY
+  ? withError(verifySignatureAppRouter(handler))
+  : withError(handler);
